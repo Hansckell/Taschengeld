@@ -3,781 +3,315 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Taschengeld-App Pro</title>
-    
-    <!-- PWA Setup -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0B1220">
+    <title>Taschengeld Pro</title>
     <link rel="manifest" href="manifest.json">
-
-    <!-- Fonts & Material Icons -->
+    <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0" />
-
-    <!-- Firebase Compat Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
-    <style>
-        /* === CSS DESIGN SYSTEM & THEMES === */
-        :root {
-            --bg-color: #0B1220;
-            --card-bg: rgba(24, 34, 53, 0.75);
-            --card-border: rgba(255, 255, 255, 0.08);
-            --primary: #4F8CFF;
-            --primary-glow: rgba(79, 140, 255, 0.25);
-            --success: #22C55E;
-            --warning: #F59E0B;
-            --error: #EF4444;
-            --text-main: #FFFFFF;
-            --text-muted: #94A3B8;
-            --money-color: #22C55E;
-            
-            --glass-blur: blur(20px);
-            --radius-lg: 24px;
-            --radius-md: 16px;
-            --radius-sm: 12px;
-            --shadow-soft: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-            --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-smooth: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        [data-theme="light"] {
-            --bg-color: #F1F5F9;
-            --card-bg: rgba(255, 255, 255, 0.85);
-            --card-border: rgba(0, 0, 0, 0.06);
-            --text-main: #0F172A;
-            --text-muted: #64748B;
-            --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
-        }
-
-        [data-theme="midnight"] {
-            --bg-color: #030712;
-            --card-bg: rgba(17, 24, 39, 0.8);
-            --primary: #6366F1;
-        }
-
-        [data-theme="purple"] {
-            --bg-color: #0F0919;
-            --card-bg: rgba(30, 19, 51, 0.8);
-            --primary: #A855F7;
-        }
-
-        [data-theme="emerald"] {
-            --bg-color: #021814;
-            --card-bg: rgba(6, 44, 36, 0.8);
-            --primary: #10B981;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            min-height: 100vh;
-            overflow-x: hidden;
-            padding-bottom: 90px;
-            transition: background-color var(--transition-smooth);
-        }
-
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        .app-header {
-            position: sticky;
-            top: 0;
-            z-index: 50;
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            background: rgba(11, 18, 32, 0.6);
-            border-bottom: 1px solid var(--card-border);
-            padding: 16px 0;
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .app-title {
-            font-size: 1.25rem;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            background: linear-gradient(135deg, #FFF 0%, var(--text-muted) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .icon-btn {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            color: var(--text-main);
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: transform var(--transition-fast);
-        }
-
-        .icon-btn:active {
-            transform: scale(0.92);
-        }
-
-        .app-page {
-            display: none;
-            opacity: 0;
-            transform: translateY(12px);
-            transition: opacity var(--transition-smooth), transform var(--transition-smooth);
-            padding-top: 20px;
-        }
-
-        .app-page.active {
-            display: block;
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .card {
-            background: var(--card-bg);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow-soft);
-        }
-
-        .balance-card {
-            background: linear-gradient(135deg, rgba(79, 140, 255, 0.15) 0%, rgba(24, 34, 53, 0.8) 100%);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .balance-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200px;
-            height: 200px;
-            background: var(--primary-glow);
-            filter: blur(60px);
-            border-radius: 50%;
-            pointer-events: none;
-        }
-
-        .card-label {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 600;
-        }
-
-        .balance-container {
-            margin: 12px 0 20px 0;
-            display: flex;
-            align-items: baseline;
-        }
-
-        .balance-value {
-            font-size: 3rem;
-            font-weight: 800;
-            letter-spacing: -1.5px;
-            color: var(--money-color);
-        }
-
-        .currency {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-left: 6px;
-            color: var(--money-color);
-        }
-
-        .goal-container {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding-top: 16px;
-            border-top: 1px solid var(--card-border);
-        }
-
-        .progress-ring-wrapper {
-            position: relative;
-            width: 52px;
-            height: 52px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .progress-ring__circle {
-            stroke: var(--primary);
-            stroke-dasharray: 125.6;
-            stroke-dashoffset: 125.6;
-            transition: stroke-dashoffset 1s ease-in-out;
-            transform: rotate(-90deg);
-            transform-origin: 50% 50%;
-        }
-
-        .progress-ring__background {
-            stroke: var(--card-border);
-        }
-
-        .progress-percent {
-            position: absolute;
-            font-size: 0.75rem;
-            font-weight: 700;
-        }
-
-        .goal-text {
-            font-size: 0.9rem;
-        }
-
-        .goal-sub {
-            color: var(--text-muted);
-            font-size: 0.8rem;
-        }
-
-        .quick-actions-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-
-        .action-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-md);
-            padding: 16px 8px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: transform var(--transition-fast);
-        }
-
-        .action-card:active {
-            transform: scale(0.95);
-        }
-
-        .action-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--primary);
-        }
-
-        .action-card span {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--text-muted);
-        }
-
-        .chips-container {
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            padding-bottom: 12px;
-            margin-bottom: 16px;
-        }
-
-        .chips-container::-webkit-scrollbar { display: none; }
-
-        .chip {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            color: var(--text-muted);
-            padding: 8px 18px;
-            border-radius: 30px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            white-space: nowrap;
-            cursor: pointer;
-            transition: all var(--transition-fast);
-        }
-
-        .chip.active {
-            background: var(--primary);
-            color: #FFF;
-            border-color: var(--primary);
-            box-shadow: 0 4px 15px var(--primary-glow);
-        }
-
-        .task-item {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-md);
-            padding: 16px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            transition: transform var(--transition-fast);
-        }
-
-        .task-info {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .task-icon-box {
-            width: 48px;
-            height: 48px;
-            border-radius: 14px;
-            background: rgba(255, 255, 255, 0.05);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary);
-        }
-
-        .task-name {
-            font-size: 0.95rem;
-            font-weight: 700;
-            margin-bottom: 2px;
-        }
-
-        .task-category {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        .task-reward-btn {
-            background: var(--success);
-            color: #FFF;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
-            transition: transform var(--transition-fast);
-        }
-
-        .task-reward-btn:active {
-            transform: scale(0.92);
-        }
-
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 100;
-            background: rgba(11, 18, 32, 0.8);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border-top: 1px solid var(--card-border);
-            padding: 10px 0 calc(10px + env(safe-area-inset-bottom)) 0;
-        }
-
-        .nav-content {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-        }
-
-        .nav-item {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            cursor: pointer;
-            width: 20%;
-            transition: color var(--transition-fast);
-        }
-
-        .nav-item.active {
-            color: var(--primary);
-        }
-
-        .nav-icon { font-size: 24px; }
-        .nav-label { font-size: 0.7rem; font-weight: 600; }
-
-        #coin-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            pointer-events: none;
-            z-index: 999;
-        }
-    </style>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script type="module" src="app.js" defer></script>
 </head>
-<body>
+<body data-theme="dark">
 
-    <canvas id="coin-canvas"></canvas>
+    <div id="coin-container"></div>
 
     <header class="app-header">
-        <div class="header-content container">
-            <h1 class="app-title">Taschengeld Pro</h1>
-            <button id="global-settings-btn" class="icon-btn" onclick="switchPage('settings')">
-                <span class="material-symbols-rounded">settings</span>
+        <div class="user-selector">
+            <button class="user-btn active" id="btn-user-jairo" onclick="switchUser('Jairo')">
+                <span class="avatar">👦</span> Jairo
+            </button>
+            <button class="user-btn" id="btn-user-eva" onclick="switchUser('Eva')">
+                <span class="avatar">👧</span> Eva
             </button>
         </div>
+        <button class="parent-lock-btn" id="open-parent-modal" title="Elternbereich">
+            🔒 <span class="hide-mobile">Eltern</span>
+        </button>
     </header>
 
-    <main class="container">
-        
-        <!-- DASHBOARD -->
-        <section id="page-dashboard" class="app-page active">
-            <div style="margin-bottom: 16px;">
-                <h2 style="font-size: 1.5rem; font-weight: 800;">Hallo <span id="user-name">Lädt...</span> 👋</h2>
+    <main class="content-container">
+        <!-- VIEW: DASHBOARD -->
+        <section id="view-dashboard" class="view-section active">
+            <div class="greeting-bar">
+                <h1 id="greeting-text">Hallo Jairo 👋</h1>
+                <p class="sub-greeting">Willkommen in deinem Finanz-Dashboard</p>
             </div>
 
-            <div class="card balance-card">
-                <p class="card-label">Aktuelles Guthaben</p>
-                <div class="balance-container">
-                    <span id="balance-val" class="balance-value">0,00</span>
-                    <span class="currency">€</span>
+            <!-- Balance Card -->
+            <div class="balance-card glass-card">
+                <span class="card-label">Aktuelles Guthaben</span>
+                <div class="balance-amount">
+                    <span id="balance-value">0,00</span> <span class="currency">€</span>
                 </div>
                 
-                <div class="goal-container">
-                    <div class="progress-ring-wrapper">
-                        <svg class="progress-ring" width="52" height="52">
-                            <circle class="progress-ring__background" stroke-width="5" fill="transparent" r="20" cx="26" cy="26"/>
-                            <circle id="goal-progress-circle" class="progress-ring__circle" stroke-width="5" fill="transparent" r="20" cx="26" cy="26"/>
-                        </svg>
-                        <span id="goal-percent" class="progress-percent">0%</span>
+                <div class="target-progress-box">
+                    <div class="target-info">
+                        <span>Monatsziel: <strong id="target-max-val">50,00 €</strong></span>
+                        <span id="target-percent-text">0%</span>
                     </div>
-                    <div class="goal-text">
-                        <p class="goal-sub">Monatsziel: <strong id="goal-target">50,00 €</strong></p>
-                        <p class="goal-sub">Restbetrag: <strong id="goal-rest" style="color: var(--text-main);">50,00 €</strong></p>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" id="target-progress-fill" style="width: 0%;"></div>
                     </div>
+                    <span class="rest-label" id="target-rest-text">Noch 50,00 € bis zum Ziel</span>
                 </div>
             </div>
 
+            <!-- Weather Widget -->
+            <div class="weather-card glass-card">
+                <div class="weather-main">
+                    <div class="weather-temp-box">
+                        <span class="weather-icon" id="weather-icon">☀️</span>
+                        <div>
+                            <div class="weather-temp" id="weather-temp">-- °C</div>
+                            <div class="weather-city" id="weather-city">Standort wird geladen...</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="weather-details">
+                    <span>🌅 <small id="weather-sunrise">--:--</small></span>
+                    <span>🌇 <small id="weather-sunset">--:--</small></span>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <h3 class="section-title">Schnellaktionen</h3>
             <div class="quick-actions-grid">
-                <div class="action-card" onclick="switchPage('tasks')">
-                    <div class="action-icon"><span class="material-symbols-rounded">assignment</span></div>
-                    <span>Aufgaben</span>
+                <div class="action-card glass-card" onclick="switchTab('tasks')">
+                    <div class="action-icon">📋</div>
+                    <div class="action-title">Aufgaben</div>
+                    <div class="action-desc">Geld verdienen</div>
                 </div>
-                <div class="action-card" onclick="switchPage('calendar')">
-                    <div class="action-icon"><span class="material-symbols-rounded">calendar_month</span></div>
-                    <span>Kalender</span>
+                <div class="action-card glass-card" onclick="switchTab('calendar')">
+                    <div class="action-icon">📅</div>
+                    <div class="action-title">Kalender</div>
+                    <div class="action-desc">Übersicht</div>
                 </div>
-                <div class="action-card" onclick="switchPage('stats')">
-                    <div class="action-icon"><span class="material-symbols-rounded">leaderboard</span></div>
-                    <span>Statistik</span>
+                <div class="action-card glass-card" onclick="switchTab('stats')">
+                    <div class="action-icon">📊</div>
+                    <div class="action-title">Statistik</div>
+                    <div class="action-desc">Fortschritt</div>
                 </div>
-                <div class="action-card" onclick="switchPage('awards')">
-                    <div class="action-icon"><span class="material-symbols-rounded">military_tech</span></div>
-                    <span>Erfolge</span>
-                </div>
-            </div>
-
-            <div class="card" style="padding: 16px; display: flex; align-items: center; justify-content: space-between;">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <span class="material-symbols-rounded" style="font-size: 32px; color: var(--warning);">wb_sunny</span>
-                    <div>
-                        <div style="font-weight: 700; font-size: 0.95rem;">22°C - Sonnig</div>
-                        <div style="font-size: 0.75rem; color: var(--text-muted);">Nürnberg</div>
-                    </div>
-                </div>
-                <div style="font-size: 0.75rem; color: var(--text-muted); text-align: right;">
-                    🌅 05:42<br>🌇 21:15
+                <div class="action-card glass-card" onclick="switchTab('achievements')">
+                    <div class="action-icon">🏆</div>
+                    <div class="action-title">Erfolge</div>
+                    <div class="action-desc">Badges sammeln</div>
                 </div>
             </div>
         </section>
 
-        <!-- AUFGABEN -->
-        <section id="page-tasks" class="app-page">
-            <h2 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 16px;">Offene Aufgaben</h2>
-            
-            <div class="chips-container">
-                <button class="chip active" onclick="filterCategory(this, 'all')">Alle</button>
-                <button class="chip" onclick="filterCategory(this, 'Wohnung')">Wohnung</button>
-                <button class="chip" onclick="filterCategory(this, 'Zimmer')">Zimmer</button>
-                <button class="chip" onclick="filterCategory(this, 'Küche')">Küche</button>
-                <button class="chip" onclick="filterCategory(this, 'Garten')">Garten</button>
-                <button class="chip" onclick="filterCategory(this, 'Schule')">Schule</button>
+        <!-- VIEW: TASKS -->
+        <section id="view-tasks" class="view-section">
+            <div class="section-header">
+                <h2>Aufgaben</h2>
+                <p>Erledige Aufgaben und verdiene Taschengeld!</p>
             </div>
 
-            <div id="tasks-container"></div>
-        </section>
-
-        <!-- KALENDER -->
-        <section id="page-calendar" class="app-page">
-            <h2 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 16px;">Aktivitäten Kalender</h2>
-            <div class="card">
-                <p style="color: var(--text-muted); font-size: 0.9rem;">Kalender synchronisiert mit Firebase...</p>
+            <!-- Category Chips -->
+            <div class="category-chips" id="category-chips">
+                <button class="chip active" data-cat="all">Alle</button>
+                <button class="chip" data-cat="Wohnung">🏠 Wohnung</button>
+                <button class="chip" data-cat="Zimmer">🪟 Zimmer</button>
+                <button class="chip" data-cat="Küche">🍽️ Küche</button>
+                <button class="chip" data-cat="Garten">🌱 Garten</button>
+                <button class="chip" data-cat="Schule">📚 Schule</button>
+                <button class="chip" data-cat="Haustier">🐶 Haustier</button>
             </div>
-        </section>
 
-        <!-- STATISTIK -->
-        <section id="page-stats" class="app-page">
-            <h2 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 16px;">Monatsstatistik</h2>
-            <div class="card">
-                <p style="color: var(--text-muted); font-size: 0.9rem;">Statistik-Diagramm wird aufgebaut...</p>
+            <div class="tasks-list" id="tasks-list-container">
+                <!-- Dynamisch generiert -->
             </div>
         </section>
 
-        <!-- ERFOLGE -->
-        <section id="page-awards" class="app-page">
-            <h2 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 16px;">Deine Erfolge</h2>
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
-                <div class="card" style="text-align: center; padding: 16px;">
-                    <span class="material-symbols-rounded" style="font-size: 40px; color: var(--warning);">stars</span>
-                    <div style="font-weight: 700; margin-top: 8px;">Erste Aufgabe</div>
-                    <div style="font-size: 0.75rem; color: var(--text-muted);">Erfolgreich erledigt</div>
+        <!-- VIEW: CALENDAR -->
+        <section id="view-calendar" class="view-section">
+            <div class="section-header">
+                <h2>Kalender</h2>
+                <p>Übersicht aller erledigten Aufgaben pro Tag</p>
+            </div>
+
+            <div class="calendar-card glass-card">
+                <div class="calendar-header">
+                    <button id="cal-prev">◀</button>
+                    <h3 id="cal-month-year">Juli 2026</h3>
+                    <button id="cal-next">▶</button>
+                </div>
+                <div class="calendar-weekdays">
+                    <span>Mo</span><span>Di</span><span>Mi</span><span>Do</span><span>Fr</span><span>Sa</span><span>So</span>
+                </div>
+                <div class="calendar-days" id="calendar-days-grid"></div>
+            </div>
+
+            <div class="day-details glass-card" id="day-details-box">
+                <h4 id="day-details-title">Tag auswählen</h4>
+                <div id="day-details-content">
+                    <p class="text-muted">Klicke auf einen Tag im Kalender, um erledigte Aufgaben zu sehen.</p>
                 </div>
             </div>
         </section>
 
-        <!-- EINSTELLUNGEN -->
-        <section id="page-settings" class="app-page">
-            <h2 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 16px;">Einstellungen</h2>
-            <div class="card">
-                <p style="font-weight: 700; margin-bottom: 12px;">Design / Theme auswählen</p>
-                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                    <button class="chip" onclick="setTheme('')">Dark Standard</button>
-                    <button class="chip" onclick="setTheme('light')">Light Mode</button>
-                    <button class="chip" onclick="setTheme('midnight')">Midnight Blue</button>
-                    <button class="chip" onclick="setTheme('purple')">Purple Glow</button>
-                    <button class="chip" onclick="setTheme('emerald')">Emerald</button>
+        <!-- VIEW: STATS -->
+        <section id="view-stats" class="view-section">
+            <div class="section-header">
+                <h2>Statistik</h2>
+                <p>Deine Einnahmen und Auswertungen</p>
+            </div>
+
+            <div class="stats-summary-grid">
+                <div class="stat-box glass-card">
+                    <span class="stat-value" id="stat-total-earned">0.00 €</span>
+                    <span class="stat-label">Gesamt verdient</span>
                 </div>
+                <div class="stat-box glass-card">
+                    <span class="stat-value" id="stat-total-tasks">0</span>
+                    <span class="stat-label">Aufgaben erledigt</span>
+                </div>
+                <div class="stat-box glass-card">
+                    <span class="stat-value" id="stat-avg-day">0.00 €</span>
+                    <span class="stat-label">Schnitt / Tag</span>
+                </div>
+            </div>
+
+            <div class="chart-card glass-card">
+                <h3>Monatsübersicht (Verdienst)</h3>
+                <canvas id="monthlyChart" width="400" height="220"></canvas>
             </div>
         </section>
 
+        <!-- VIEW: ACHIEVEMENTS -->
+        <section id="view-achievements" class="view-section">
+            <div class="section-header">
+                <h2>Erfolge & Badges</h2>
+                <p>Sammle Meilensteine und Schalte Abzeichen frei!</p>
+            </div>
+
+            <div class="badges-grid" id="badges-container">
+                <!-- Dynamisch generiert -->
+            </div>
+        </section>
     </main>
 
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
-        <div class="nav-content container">
-            <button class="nav-item active" onclick="switchPage('dashboard')">
-                <span class="material-symbols-rounded nav-icon">home</span>
-                <span class="nav-label">Start</span>
-            </button>
-            <button class="nav-item" onclick="switchPage('tasks')">
-                <span class="material-symbols-rounded nav-icon">assignment</span>
-                <span class="nav-label">Aufgaben</span>
-            </button>
-            <button class="nav-item" onclick="switchPage('calendar')">
-                <span class="material-symbols-rounded nav-icon">calendar_month</span>
-                <span class="nav-label">Kalender</span>
-            </button>
-            <button class="nav-item" onclick="switchPage('stats')">
-                <span class="material-symbols-rounded nav-icon">leaderboard</span>
-                <span class="nav-label">Statistik</span>
-            </button>
-            <button class="nav-item" onclick="switchPage('awards')">
-                <span class="material-symbols-rounded nav-icon">military_tech</span>
-                <span class="nav-label">Erfolge</span>
-            </button>
-        </div>
+        <button class="nav-item active" onclick="switchTab('dashboard')" id="nav-dashboard">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Start</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('tasks')" id="nav-tasks">
+            <span class="nav-icon">📋</span>
+            <span class="nav-label">Aufgaben</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('calendar')" id="nav-calendar">
+            <span class="nav-icon">📅</span>
+            <span class="nav-label">Kalender</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('stats')" id="nav-stats">
+            <span class="nav-icon">📊</span>
+            <span class="nav-label">Statistik</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('achievements')" id="nav-achievements">
+            <span class="nav-icon">🏆</span>
+            <span class="nav-label">Erfolge</span>
+        </button>
     </nav>
 
-    <!-- FIREBASE INTEGRATION & LOGIK -->
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyBBt06LLcqn_bEub_Z6fu2U2IcNWvJNDBw",
-            authDomain: "taschengeld-app-7155a.firebaseapp.com",
-            projectId: "taschengeld-app-7155a",
-            storageBucket: "taschengeld-app-7155a.appspot.com",
-            messagingSenderId: "1028711090333",
-            appId: "1:1028711090333:web:a2408c6bfedfa4c03b87bc"
-        };
+    <!-- PARENT SECTION / PIN MODAL -->
+    <div class="modal-overlay" id="parent-pin-modal">
+        <div class="modal-card glass-card">
+            <h3>🔒 Elternbereich</h3>
+            <p>Gib den 4-stelligen PIN-Code ein:</p>
+            <input type="password" id="parent-pin-input" maxlength="4" placeholder="****" class="pin-input">
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="close-pin-modal">Abbrechen</button>
+                <button class="btn btn-primary" id="submit-pin-btn">Freischalten</button>
+            </div>
+        </div>
+    </div>
 
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const db = firebase.firestore();
+    <!-- PARENT PANEL MODAL -->
+    <div class="modal-overlay" id="parent-panel-modal">
+        <div class="modal-card glass-card modal-large">
+            <div class="modal-header">
+                <h3>⚙️ Eltern-Verwaltung</h3>
+                <button class="close-btn" id="close-parent-panel">✖</button>
+            </div>
 
-        let currentUser = 'Jairo';
-        let currentBalance = 0;
-        let monthlyGoal = 50.00;
-        let tasks = [];
+            <div class="parent-tabs">
+                <button class="ptab-btn active" onclick="switchParentTab('tasks-manage')">Aufgaben</button>
+                <button class="ptab-btn" onclick="switchParentTab('settings-manage')">Einstellungen</button>
+                <button class="ptab-btn" onclick="switchParentTab('history-manage')">Historie</button>
+            </div>
 
-        function switchPage(pageId) {
-            document.querySelectorAll('.app-page').forEach(page => page.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            <!-- Parent Tab 1: Task Management -->
+            <div id="ptab-tasks-manage" class="ptab-content active">
+                <h4>Neue Aufgabe erstellen</h4>
+                <form id="create-task-form" class="task-form">
+                    <input type="text" id="task-title-in" placeholder="Titel (z.B. Müll rausbringen)" required>
+                    <select id="task-cat-in">
+                        <option value="Wohnung">🏠 Wohnung</option>
+                        <option value="Zimmer">🪟 Zimmer</option>
+                        <option value="Küche">🍽️ Küche</option>
+                        <option value="Garten">🌱 Garten</option>
+                        <option value="Schule">📚 Schule</option>
+                        <option value="Haustier">🐶 Haustier</option>
+                    </select>
+                    <input type="number" id="task-price-in" step="0.5" placeholder="Preis (€)" required>
+                    <input type="text" id="task-icon-in" placeholder="Icon (Emoji z.B. 🧹)">
+                    <button type="submit" class="btn btn-primary">+ Hinzufügen</button>
+                </form>
 
-            const targetPage = document.getElementById(`page-${pageId}`);
-            if (targetPage) targetPage.classList.add('active');
+                <h4>Bestehende Aufgaben</h4>
+                <div id="parent-tasks-list" class="parent-tasks-list"></div>
+            </div>
 
-            const activeNav = document.querySelector(`.nav-item[onclick*="${pageId}"]`);
-            if (activeNav) activeNav.classList.add('active');
-        }
+            <!-- Parent Tab 2: Settings -->
+            <div id="ptab-settings-manage" class="ptab-content">
+                <div class="setting-item">
+                    <label>Design-Theme wähen:</label>
+                    <select id="theme-select" onchange="changeTheme(this.value)">
+                        <option value="dark">Dark Mode (Standard)</option>
+                        <option value="light">Light Premium</option>
+                        <option value="midnight">Midnight Deep Blue</option>
+                        <option value="purple">Neon Purple</option>
+                        <option value="emerald">Emerald Green</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label>Monatsziel (Jairo):</label>
+                    <input type="number" id="target-jairo-in" step="5" value="50">
+                </div>
+                <div class="setting-item">
+                    <label>Monatsziel (Eva):</label>
+                    <input type="number" id="target-eva-in" step="5" value="50">
+                </div>
+                <div class="setting-item">
+                    <label>PIN ändern:</label>
+                    <input type="password" id="new-pin-in" maxlength="4" placeholder="Neuer 4-stelliger PIN">
+                </div>
+                <button class="btn btn-primary" onclick="saveParentSettings()">Einstellungen Speichern</button>
+                <hr>
+                <div class="setting-item">
+                    <button class="btn btn-danger" onclick="resetMonthlyBalance()">Monats-Guthaben auf 0 € zurücksetzen</button>
+                </div>
+            </div>
 
-        function setTheme(themeName) {
-            if (themeName) {
-                document.documentElement.setAttribute('data-theme', themeName);
-            } else {
-                document.documentElement.removeAttribute('data-theme');
-            }
-        }
+            <!-- Parent Tab 3: History -->
+            <div id="ptab-history-manage" class="ptab-content">
+                <h4>Historie erledigter Aufgaben</h4>
+                <div id="history-list" class="history-list"></div>
+                <button class="btn btn-secondary" onclick="exportCSV()">📊 Als CSV Exportieren</button>
+            </div>
+        </div>
+    </div>
 
-        function initFirebaseSync() {
-            db.collection('users').doc(currentUser).onSnapshot(doc => {
-                if (doc.exists) {
-                    const data = doc.data();
-                    currentBalance = data.balance || 0.00;
-                    monthlyGoal = data.goal || 50.00;
-                    updateDashboardUI();
-                } else {
-                    db.collection('users').doc(currentUser).set({ balance: 0.00, goal: 50.00 });
-                }
-            });
+    <!-- Snackbar / Notification -->
+    <div id="snackbar" class="snackbar">
+        <span id="snackbar-msg">Aufgabe erledigt!</span>
+        <button id="snackbar-undo-btn" style="display:none;">Rückgängig</button>
+    </div>
 
-            db.collection('tasks').onSnapshot(snapshot => {
-                tasks = [];
-                snapshot.forEach(doc => tasks.push({ id: doc.id, ...doc.data() }));
-                renderTasks('all');
-            });
-        }
-
-        function updateDashboardUI() {
-            document.getElementById('balance-val').innerText = currentBalance.toFixed(2).replace('.', ',');
-            document.getElementById('user-name').innerText = currentUser;
-
-            const percent = Math.min(Math.round((currentBalance / monthlyGoal) * 100), 100);
-            const rest = Math.max(monthlyGoal - currentBalance, 0);
-
-            document.getElementById('goal-percent').innerText = `${percent}%`;
-            document.getElementById('goal-target').innerText = `${monthlyGoal.toFixed(2).replace('.', ',')} €`;
-            document.getElementById('goal-rest').innerText = `${rest.toFixed(2).replace('.', ',')} €`;
-
-            const circle = document.getElementById('goal-progress-circle');
-            const circumference = 125.6;
-            const offset = circumference - (percent / 100) * circumference;
-            circle.style.strokeDashoffset = offset;
-        }
-
-        function renderTasks(filterCategory) {
-            const container = document.getElementById('tasks-container');
-            container.innerHTML = '';
-
-            const filtered = filterCategory === 'all' 
-                ? tasks 
-                : tasks.filter(t => t.category === filterCategory);
-
-            if (filtered.length === 0) {
-                container.innerHTML = `<div class="card" style="text-align:center; color:var(--text-muted);">Keine Aufgaben vorhanden.</div>`;
-                return;
-            }
-
-            filtered.forEach(task => {
-                const item = document.createElement('div');
-                item.className = 'task-item';
-                item.innerHTML = `
-                    <div class="task-info">
-                        <div class="task-icon-box">
-                            <span class="material-symbols-rounded">${task.icon || 'assignment'}</span>
-                        </div>
-                        <div>
-                            <div class="task-name">${task.title}</div>
-                            <div class="task-category">${task.category}</div>
-                        </div>
-                    </div>
-                    <button class="task-reward-btn" onclick="completeTask('${task.id}', ${task.reward})">
-                        +${task.reward.toFixed(2).replace('.', ',')} €
-                    </button>
-                `;
-                container.appendChild(item);
-            });
-        }
-
-        function filterCategory(btnElement, category) {
-            document.querySelectorAll('.chips-container .chip').forEach(c => c.classList.remove('active'));
-            btnElement.classList.add('active');
-            renderTasks(category);
-        }
-
-        function completeTask(taskId, reward) {
-            triggerCoinAnimation();
-
-            const newBalance = currentBalance + reward;
-            db.collection('users').doc(currentUser).update({
-                balance: newBalance
-            }).then(() => {
-                db.collection('history').add({
-                    user: currentUser,
-                    taskId: taskId,
-                    reward: reward,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                });
-            });
-        }
-
-        function triggerCoinAnimation() {
-            const canvas = document.getElementById('coin-canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-
-            let particles = [];
-            for (let i = 0; i < 25; i++) {
-                particles.push({
-                    x: canvas.width / 2,
-                    y: canvas.height / 2,
-                    vx: (Math.random() - 0.5) * 12,
-                    vy: (Math.random() - 0.7) * 14,
-                    size: Math.random() * 8 + 6,
-                    color: '#F59E0B'
-                });
-            }
-
-            function animate() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                let alive = false;
-                particles.forEach(p => {
-                    p.x += p.vx;
-                    p.y += p.vy;
-                    p.vy += 0.5;
-                    if (p.y < canvas.height) alive = true;
-
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                    ctx.fillStyle = p.color;
-                    ctx.fill();
-                });
-                if (alive) requestAnimationFrame(animate);
-            }
-            animate();
-        }
-
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(() => {});
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            initFirebaseSync();
-        });
-    </script>
 </body>
 </html>
