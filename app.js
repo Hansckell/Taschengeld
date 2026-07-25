@@ -5,23 +5,38 @@ let state = {
     'Eva': { balance: 18.00, target: 50.00 }
 };
 
+// Diese Funktion wird beim Klick auf Jairo oder Eva aufgerufen
 function switchUser(name) {
     currentUser = name;
     
-    document.getElementById('btn-jairo').classList.toggle('active', name === 'Jairo');
-    document.getElementById('btn-eva').classList.toggle('active', name === 'Eva');
-    document.getElementById('profile-label').innerText = `Guthaben von ${name}`;
+    // Visuelles Feedback für die Buttons
+    const btnJairo = document.getElementById('btn-jairo');
+    const btnEva = document.getElementById('btn-eva');
+    
+    if (btnJairo) btnJairo.classList.toggle('active', name === 'Jairo');
+    if (btnEva) btnEva.classList.toggle('active', name === 'Eva');
+    
+    const label = document.getElementById('profile-label');
+    if (label) label.innerText = `Guthaben von ${name}`;
     
     updateUI();
 }
 
 function updateUI() {
     const data = state[currentUser];
-    document.getElementById('balance-display').innerText = data.balance.toFixed(2).replace('.', ',') + ' €';
+    const balanceDisplay = document.getElementById('balance-display');
+    if (balanceDisplay) {
+        balanceDisplay.innerText = data.balance.toFixed(2).replace('.', ',') + ' €';
+    }
     
     const pct = Math.min(100, Math.round((data.balance / data.target) * 100));
-    document.getElementById('goal-progress').style.width = pct + '%';
-    document.getElementById('goal-text').innerText = `Sparziel: ${data.target.toFixed(2).replace('.', ',')} € (${pct}%)`;
+    const progressBar = document.getElementById('goal-progress');
+    if (progressBar) progressBar.style.width = pct + '%';
+    
+    const goalText = document.getElementById('goal-text');
+    if (goalText) {
+        goalText.innerText = `Sparziel: ${data.target.toFixed(2).replace('.', ',')} € (${pct}%)`;
+    }
 }
 
 function addMoney(amount, btn = null) {
@@ -44,11 +59,13 @@ function addMoneyPrompt() {
 }
 
 function openParentModal() {
-    document.getElementById('parentModal').style.display = 'flex';
+    const modal = document.getElementById('parentModal');
+    if (modal) modal.style.display = 'flex';
 }
 
 function closeModal(id) {
-    document.getElementById(id).style.display = 'none';
+    const modal = document.getElementById(id);
+    if (modal) modal.style.display = 'none';
 }
 
 function closeModalOnOuterClick(event, modalId) {
@@ -58,10 +75,10 @@ function closeModalOnOuterClick(event, modalId) {
 }
 
 function unlockParentArea() {
-    const pin = document.getElementById('parentPin').value;
-    if (pin === '1234') {
+    const pinInput = document.getElementById('parentPin');
+    if (pinInput && pinInput.value === '1234') {
         alert('Elternbereich freigeschaltet!');
-        document.getElementById('parentPin').value = '';
+        pinInput.value = '';
         closeModal('parentModal');
     } else {
         alert('Falscher PIN! Standard ist 1234.');
