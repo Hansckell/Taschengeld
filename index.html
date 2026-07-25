@@ -2,316 +2,77 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#0B1220">
-    <title>Taschengeld Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Taschengeld App Pro</title>
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <script type="module" src="app.js" defer></script>
+    <meta name="theme-color" content="#1a1c29">
 </head>
 <body data-theme="dark">
 
-    <div id="coin-container"></div>
-
-    <header class="app-header">
-        <div class="user-selector">
-            <button class="user-btn active" id="btn-user-jairo" onclick="switchUser('Jairo')">
-                <span class="avatar">👦</span> Jairo
-            </button>
-            <button class="user-btn" id="btn-user-eva" onclick="switchUser('Eva')">
-                <span class="avatar">👧</span> Eva
-            </button>
-        </div>
-        <button class="parent-lock-btn" id="open-parent-modal" title="Elternbereich">
-            🔒 <span class="hide-mobile">Eltern</span>
-        </button>
-    </header>
-
-    <main class="content-container">
-        <!-- VIEW: DASHBOARD -->
-        <section id="view-dashboard" class="view-section active">
-            <div class="greeting-bar">
-                <h1 id="greeting-text">Hallo Jairo 👋</h1>
-                <p class="sub-greeting">Willkommen in deinem Finanz-Dashboard</p>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="user-selector">
+                <button class="profile-btn active" id="btn-jairo" onclick="switchProfile('Jairo')">👦 Jairo</button>
+                <button class="profile-btn" id="btn-eva" onclick="switchProfile('Eva')">👧 Eva</button>
             </div>
+            <button class="icon-btn" onclick="openParentModal()" title="Elternbereich">🔒</button>
+        </header>
 
-            <!-- Balance Card -->
-            <div class="balance-card glass-card">
-                <span class="card-label">Aktuelles Guthaben</span>
-                <div class="balance-amount">
-                    <span id="balance-value">0,00</span> <span class="currency">€</span>
+        <!-- Main Dashboard -->
+        <main class="content">
+            <!-- Balance Card (Glassmorphism) -->
+            <div class="card glass balance-card">
+                <span class="card-subtitle" id="profile-label">Guthaben von Jairo</span>
+                <h1 class="balance-amount" id="balance-display">0,00 €</h1>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="goal-progress" style="width: 0%;"></div>
                 </div>
-                
-                <div class="target-progress-box">
-                    <div class="target-info">
-                        <span>Monatsziel: <strong id="target-max-val">50,00 €</strong></span>
-                        <span id="target-percent-text">0%</span>
-                    </div>
-                    <div class="progress-bar-bg">
-                        <div class="progress-bar-fill" id="target-progress-fill" style="width: 0%;"></div>
-                    </div>
-                    <span class="rest-label" id="target-rest-text">Noch 50,00 € bis zum Ziel</span>
-                </div>
-            </div>
-
-            <!-- Weather Widget -->
-            <div class="weather-card glass-card">
-                <div class="weather-main">
-                    <div class="weather-temp-box">
-                        <span class="weather-icon" id="weather-icon">☀️</span>
-                        <div>
-                            <div class="weather-temp" id="weather-temp">-- °C</div>
-                            <div class="weather-city" id="weather-city">Standort wird geladen...</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="weather-details">
-                    <span>🌅 <small id="weather-sunrise">--:--</small></span>
-                    <span>🌇 <small id="weather-sunset">--:--</small></span>
-                </div>
+                <span class="goal-text" id="goal-text">Sparziel: 0%</span>
             </div>
 
             <!-- Quick Actions -->
-            <h3 class="section-title">Schnellaktionen</h3>
-            <div class="quick-actions-grid">
-                <div class="action-card glass-card" onclick="switchTab('tasks')">
-                    <div class="action-icon">📋</div>
-                    <div class="action-title">Aufgaben</div>
-                    <div class="action-desc">Geld verdienen</div>
-                </div>
-                <div class="action-card glass-card" onclick="switchTab('calendar')">
-                    <div class="action-icon">📅</div>
-                    <div class="action-title">Kalender</div>
-                    <div class="action-desc">Übersicht</div>
-                </div>
-                <div class="action-card glass-card" onclick="switchTab('stats')">
-                    <div class="action-icon">📊</div>
-                    <div class="action-title">Statistik</div>
-                    <div class="action-desc">Fortschritt</div>
-                </div>
-                <div class="action-card glass-card" onclick="switchTab('achievements')">
-                    <div class="action-icon">🏆</div>
-                    <div class="action-title">Erfolge</div>
-                    <div class="action-desc">Badges sammeln</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- VIEW: TASKS -->
-        <section id="view-tasks" class="view-section">
-            <div class="section-header">
-                <h2>Aufgaben</h2>
-                <p>Erledige Aufgaben und verdiene Taschengeld!</p>
+            <div class="quick-actions">
+                <button class="action-btn glass" onclick="showNotification('Aufgaben sind unten gelistet!')">✅ Aufgaben</button>
+                <button class="action-btn glass" onclick="showNotification('Statistik-Funktion wird geladen...')">📊 Statistik</button>
             </div>
 
-            <!-- Category Chips -->
-            <div class="category-chips" id="category-chips">
-                <button class="chip active" data-cat="all">Alle</button>
-                <button class="chip" data-cat="Wohnung">🏠 Wohnung</button>
-                <button class="chip" data-cat="Zimmer">🪟 Zimmer</button>
-                <button class="chip" data-cat="Küche">🍽️ Küche</button>
-                <button class="chip" data-cat="Garten">🌱 Garten</button>
-                <button class="chip" data-cat="Schule">📚 Schule</button>
-                <button class="chip" data-cat="Haustier">🐶 Haustier</button>
+            <!-- Tasks / Activity Section -->
+            <div class="card glass">
+                <h3>Offene Aufgaben</h3>
+                <ul class="task-list" id="task-list">
+                    <li class="task-item">
+                        <span>Zimmer aufräumen (+2,00 €)</span>
+                        <button class="check-btn" onclick="completeTask(this, 2.00)">✓</button>
+                    </li>
+                    <li class="task-item">
+                        <span>Müll rausbringen (+1,00 €)</span>
+                        <button class="check-btn" onclick="completeTask(this, 1.00)">✓</button>
+                    </li>
+                </ul>
             </div>
+        </main>
 
-            <div class="tasks-list" id="tasks-list-container">
-                <!-- Dynamisch generiert -->
-            </div>
-        </section>
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav glass">
+            <button class="nav-item active" onclick="switchTab('home')">🏠<br>Home</button>
+            <button class="nav-item" onclick="switchTab('calendar')">📅<br>Kalender</button>
+            <button class="nav-item" onclick="openParentModal()">⚙️<br>Settings</button>
+        </nav>
+    </div>
 
-        <!-- VIEW: CALENDAR -->
-        <section id="view-calendar" class="view-section">
-            <div class="section-header">
-                <h2>Kalender</h2>
-                <p>Übersicht aller erledigten Aufgaben pro Tag</p>
-            </div>
-
-            <div class="calendar-card glass-card">
-                <div class="calendar-header">
-                    <button id="cal-prev">◀</button>
-                    <h3 id="cal-month-year">Juli 2026</h3>
-                    <button id="cal-next">▶</button>
-                </div>
-                <div class="calendar-weekdays">
-                    <span>Mo</span><span>Di</span><span>Mi</span><span>Do</span><span>Fr</span><span>Sa</span><span>So</span>
-                </div>
-                <div class="calendar-days" id="calendar-days-grid"></div>
-            </div>
-
-            <div class="day-details glass-card" id="day-details-box">
-                <h4 id="day-details-title">Tag auswählen</h4>
-                <div id="day-details-content">
-                    <p class="text-muted">Klicke auf einen Tag im Kalender, um erledigte Aufgaben zu sehen.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- VIEW: STATS -->
-        <section id="view-stats" class="view-section">
-            <div class="section-header">
-                <h2>Statistik</h2>
-                <p>Deine Einnahmen und Auswertungen</p>
-            </div>
-
-            <div class="stats-summary-grid">
-                <div class="stat-box glass-card">
-                    <span class="stat-value" id="stat-total-earned">0.00 €</span>
-                    <span class="stat-label">Gesamt verdient</span>
-                </div>
-                <div class="stat-box glass-card">
-                    <span class="stat-value" id="stat-total-tasks">0</span>
-                    <span class="stat-label">Aufgaben erledigt</span>
-                </div>
-                <div class="stat-box glass-card">
-                    <span class="stat-value" id="stat-avg-day">0.00 €</span>
-                    <span class="stat-label">Schnitt / Tag</span>
-                </div>
-            </div>
-
-            <div class="chart-card glass-card">
-                <h3>Monatsübersicht (Verdienst)</h3>
-                <canvas id="monthlyChart" width="400" height="220"></canvas>
-            </div>
-        </section>
-
-        <!-- VIEW: ACHIEVEMENTS -->
-        <section id="view-achievements" class="view-section">
-            <div class="section-header">
-                <h2>Erfolge & Badges</h2>
-                <p>Sammle Meilensteine und Schalte Abzeichen frei!</p>
-            </div>
-
-            <div class="badges-grid" id="badges-container">
-                <!-- Dynamisch generiert -->
-            </div>
-        </section>
-    </main>
-
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-        <button class="nav-item active" onclick="switchTab('dashboard')" id="nav-dashboard">
-            <span class="nav-icon">🏠</span>
-            <span class="nav-label">Start</span>
-        </button>
-        <button class="nav-item" onclick="switchTab('tasks')" id="nav-tasks">
-            <span class="nav-icon">📋</span>
-            <span class="nav-label">Aufgaben</span>
-        </button>
-        <button class="nav-item" onclick="switchTab('calendar')" id="nav-calendar">
-            <span class="nav-icon">📅</span>
-            <span class="nav-label">Kalender</span>
-        </button>
-        <button class="nav-item" onclick="switchTab('stats')" id="nav-stats">
-            <span class="nav-icon">📊</span>
-            <span class="nav-label">Statistik</span>
-        </button>
-        <button class="nav-item" onclick="switchTab('achievements')" id="nav-achievements">
-            <span class="nav-icon">🏆</span>
-            <span class="nav-label">Erfolge</span>
-        </button>
-    </nav>
-
-    <!-- PARENT SECTION / PIN MODAL -->
-    <div class="modal-overlay" id="parent-pin-modal">
-        <div class="modal-card glass-card">
-            <h3>🔒 Elternbereich</h3>
-            <p>Gib den 4-stelligen PIN-Code ein:</p>
-            <input type="password" id="parent-pin-input" maxlength="4" placeholder="****" class="pin-input">
-            <div class="modal-actions">
-                <button class="btn btn-secondary" id="close-pin-modal">Abbrechen</button>
-                <button class="btn btn-primary" id="submit-pin-btn">Freischalten</button>
-            </div>
+    <!-- Modals -->
+    <div class="modal" id="parentModal" onclick="closeModalOnOuterClick(event, 'parentModal')">
+        <div class="modal-body glass">
+            <h3>Elternbereich</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Bitte PIN eingeben (Standard: 1234)</p>
+            <input type="password" id="parentPin" placeholder="PIN" maxlength="4">
+            <button class="btn-primary" onclick="unlockParentArea()">Freischalten</button>
+            <button class="btn-secondary" onclick="closeModal('parentModal')">Abbrechen</button>
         </div>
     </div>
 
-    <!-- PARENT PANEL MODAL -->
-    <div class="modal-overlay" id="parent-panel-modal">
-        <div class="modal-card glass-card modal-large">
-            <div class="modal-header">
-                <h3>⚙️ Eltern-Verwaltung</h3>
-                <button class="close-btn" id="close-parent-panel">✖</button>
-            </div>
-
-            <div class="parent-tabs">
-                <button class="ptab-btn active" onclick="switchParentTab('tasks-manage')">Aufgaben</button>
-                <button class="ptab-btn" onclick="switchParentTab('settings-manage')">Einstellungen</button>
-                <button class="ptab-btn" onclick="switchParentTab('history-manage')">Historie</button>
-            </div>
-
-            <!-- Parent Tab 1: Task Management -->
-            <div id="ptab-tasks-manage" class="ptab-content active">
-                <h4>Neue Aufgabe erstellen</h4>
-                <form id="create-task-form" class="task-form">
-                    <input type="text" id="task-title-in" placeholder="Titel (z.B. Müll rausbringen)" required>
-                    <select id="task-cat-in">
-                        <option value="Wohnung">🏠 Wohnung</option>
-                        <option value="Zimmer">🪟 Zimmer</option>
-                        <option value="Küche">🍽️ Küche</option>
-                        <option value="Garten">🌱 Garten</option>
-                        <option value="Schule">📚 Schule</option>
-                        <option value="Haustier">🐶 Haustier</option>
-                    </select>
-                    <input type="number" id="task-price-in" step="0.5" placeholder="Preis (€)" required>
-                    <input type="text" id="task-icon-in" placeholder="Icon (Emoji z.B. 🧹)">
-                    <button type="submit" class="btn btn-primary">+ Hinzufügen</button>
-                </form>
-
-                <h4>Bestehende Aufgaben</h4>
-                <div id="parent-tasks-list" class="parent-tasks-list"></div>
-            </div>
-
-            <!-- Parent Tab 2: Settings -->
-            <div id="ptab-settings-manage" class="ptab-content">
-                <div class="setting-item">
-                    <label>Design-Theme wähen:</label>
-                    <select id="theme-select" onchange="changeTheme(this.value)">
-                        <option value="dark">Dark Mode (Standard)</option>
-                        <option value="light">Light Premium</option>
-                        <option value="midnight">Midnight Deep Blue</option>
-                        <option value="purple">Neon Purple</option>
-                        <option value="emerald">Emerald Green</option>
-                    </select>
-                </div>
-                <div class="setting-item">
-                    <label>Monatsziel (Jairo):</label>
-                    <input type="number" id="target-jairo-in" step="5" value="50">
-                </div>
-                <div class="setting-item">
-                    <label>Monatsziel (Eva):</label>
-                    <input type="number" id="target-eva-in" step="5" value="50">
-                </div>
-                <div class="setting-item">
-                    <label>PIN ändern:</label>
-                    <input type="password" id="new-pin-in" maxlength="4" placeholder="Neuer 4-stelliger PIN">
-                </div>
-                <button class="btn btn-primary" onclick="saveParentSettings()">Einstellungen Speichern</button>
-                <hr>
-                <div class="setting-item">
-                    <button class="btn btn-danger" onclick="resetMonthlyBalance()">Monats-Guthaben auf 0 € zurücksetzen</button>
-                </div>
-            </div>
-
-            <!-- Parent Tab 3: History -->
-            <div id="ptab-history-manage" class="ptab-content">
-                <h4>Historie erledigter Aufgaben</h4>
-                <div id="history-list" class="history-list"></div>
-                <button class="btn btn-secondary" onclick="exportCSV()">📊 Als CSV Exportieren</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Snackbar / Notification -->
-    <div id="snackbar" class="snackbar">
-        <span id="snackbar-msg">Aufgabe erledigt!</span>
-        <button id="snackbar-undo-btn" style="display:none;">Rückgängig</button>
-    </div>
-
+    <script src="app.js"></script>
 </body>
 </html>
