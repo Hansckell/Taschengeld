@@ -14,8 +14,8 @@
         <!-- Header -->
         <header class="header">
             <div class="user-selector">
-                <button class="profile-btn active" id="btn-jairo" onclick="switchProfile('Jairo')">👦 Jairo</button>
-                <button class="profile-btn" id="btn-eva" onclick="switchProfile('Eva')">👧 Eva</button>
+                <button class="profile-btn active" id="btn-jairo" onclick="switchUser('Jairo')">👦 Jairo</button>
+                <button class="profile-btn" id="btn-eva" onclick="switchUser('Eva')">👧 Eva</button>
             </div>
             <button class="icon-btn" onclick="openParentModal()" title="Elternbereich">🔒</button>
         </header>
@@ -25,11 +25,11 @@
             <!-- Balance Card -->
             <div class="card glass balance-card">
                 <span class="card-subtitle" id="profile-label">Guthaben von Jairo</span>
-                <h1 class="balance-amount" id="balance-display">Lade...</h1>
+                <h1 class="balance-amount" id="balance-display">12,50 €</h1>
                 <div class="progress-bar-container">
-                    <div class="progress-bar" id="goal-progress" style="width: 0%;"></div>
+                    <div class="progress-bar" id="goal-progress" style="width: 25%;"></div>
                 </div>
-                <span class="goal-text" id="goal-text">Sparziel: 50,00 €</span>
+                <span class="goal-text" id="goal-text">Sparziel: 50,00 € (25%)</span>
             </div>
 
             <!-- Quick Actions -->
@@ -76,9 +76,6 @@
         </div>
     </div>
 
-    <!-- Firebase Script (Echtzeit-Verbindung) -->
-    <script type="module" src="firebase.js"></script>
-    <!-- Hauptlogik -->
     <script src="app.js"></script>
 </body>
 </html>
