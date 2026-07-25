@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Taschengeld App Pro</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+    <meta name="theme-color" content="#0f172a">
+</head>
+<body data-theme="dark">
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="user-selector">
+                <button class="profile-btn active" id="btn-jairo" onclick="switchProfile('Jairo')">👦 Jairo</button>
+                <button class="profile-btn" id="btn-eva" onclick="switchProfile('Eva')">👧 Eva</button>
+            </div>
+            <button class="icon-btn" onclick="openParentModal()" title="Elternbereich">🔒</button>
+        </header>
+
+        <!-- Main Dashboard -->
+        <main class="content">
+            <!-- Balance Card -->
+            <div class="card glass balance-card">
+                <span class="card-subtitle" id="profile-label">Guthaben von Jairo</span>
+                <h1 class="balance-amount" id="balance-display">Lade...</h1>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="goal-progress" style="width: 0%;"></div>
+                </div>
+                <span class="goal-text" id="goal-text">Sparziel: 50,00 €</span>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <button class="action-btn glass" onclick="addMoneyPrompt()">➕ Einzahlen</button>
+                <button class="action-btn glass" onclick="openParentModal()">⚙️ Verwalten</button>
+            </div>
+
+            <!-- Tasks Section -->
+            <div class="card glass">
+                <h3>Offene Aufgaben</h3>
+                <ul class="task-list">
+                    <li class="task-item">
+                        <span>Zimmer aufräumen (+2,00 €)</span>
+                        <button class="check-btn" onclick="addMoney(2.00, this)">✓</button>
+                    </li>
+                    <li class="task-item">
+                        <span>Geschirrspüler ausräumen (+1,50 €)</span>
+                        <button class="check-btn" onclick="addMoney(1.50, this)">✓</button>
+                    </li>
+                    <li class="task-item">
+                        <span>Müll rausbringen (+1,00 €)</span>
+                        <button class="check-btn" onclick="addMoney(1.00, this)">✓</button>
+                    </li>
+                </ul>
+            </div>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav glass">
+            <button class="nav-item active">🏠<br>Home</button>
+            <button class="nav-item" onclick="openParentModal()">⚙️<br>Settings</button>
+        </nav>
+    </div>
+
+    <!-- Parents PIN Modal -->
+    <div class="modal" id="parentModal" onclick="closeModalOnOuterClick(event, 'parentModal')">
+        <div class="modal-body glass">
+            <h3>Elternbereich</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Bitte PIN eingeben (Standard: 1234)</p>
+            <input type="password" id="parentPin" placeholder="PIN" maxlength="4">
+            <button class="btn-primary" onclick="unlockParentArea()">Freischalten</button>
+            <button class="btn-secondary" onclick="closeModal('parentModal')">Abbrechen</button>
+        </div>
+    </div>
+
+    <!-- Firebase Script (Echtzeit-Verbindung) -->
+    <script type="module" src="firebase.js"></script>
+    <!-- Hauptlogik -->
+    <script src="app.js"></script>
+</body>
+</html>
